@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MarketSphere - Buyer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // JavaScript code for buyer functionality
+        });
+    </script>
+</head>
+<body class="bg-blue-900 dark:bg-zinc-800">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-4 text-white text-center">MarketSphere Buyer Portal</h1>
+        <p class="text-xl mb-8 text-center text-white">Welcome, {{ buyer.first_name }} {{ buyer.last_name }}!</p>
+        
+        <div class="mb-8 text-center">
+            <a href="{{ url_for('home') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">
+                Back to Home Page
+            </a>
+            <a href="{{ url_for('logout_route') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Logout
+            </a>
+        </div>
+        
+        <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Product Catalog</h2>
+            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for product in products %}
+                <div class="product bg-white dark:bg-zinc-800 shadow-md rounded p-4">
+                    <h3 class="text-xl font-bold mb-2">{{ product.item_name }}</h3>
+                    <p class="mb-2">{{ product.description }}</p>
+                    <p class="mb-4">Price: ${{ product.price }}</p>
+                    <button class="add-to-cart bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" data-product-id="{{ product.item_id }}">
+                        Add to Cart
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8 mb-8">
+            <h2 class="text-2xl font-bold mb-4">My Cart</h2>
+            <div id="cart">
+                <!-- Display cart items here -->
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8">
+            <h2 class="text-2xl font-bold mb-4">Order History</h2>
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 bg-blue-500 text-white">Order ID</th>
+                        <th class="py-2 px-4 bg-blue-500 text-white">Product</th>
+                        <th class="py-2 px-4 bg-blue-500 text-white">Seller</th>
+                        <th class="py-2 px-4 bg-blue-500 text-white">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td class="py-2 px-4 border-b">{{ order.order_id }}</td>
+                        <td class="py-2 px-4 border-b">{{ order.product_id }}</td>
+                        <td class="py-2 px-4 border-b">{{ order.seller_id }}</td>
+                        <td class="py-2 px-4 border-b">{{ order.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
