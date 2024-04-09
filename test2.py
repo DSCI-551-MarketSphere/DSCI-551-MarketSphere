@@ -3,7 +3,6 @@ from pathlib import Path
 import unittest
 from backend.db_manager import DBManager
 
-
 # Add the parent directory to sys.path to make the backend package available
 sys.path.append(str(Path(__file__).resolve().parent))
 
