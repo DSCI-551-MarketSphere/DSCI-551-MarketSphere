@@ -63,16 +63,6 @@ def logout_route():
     logout()
     return render_template('logout.html')
 
-# @app.route('/admin')
-# def admin_route():
-#     if get_current_user_role() == "admin":
-#         current_admin = get_current_user()
-#         users = current_admin.get_all_users()
-#         products = current_admin.get_all_products()
-#         orders = current_admin.get_all_orders()
-#         return render_template('admin.html', users=users, products=products, orders=orders)
-#     else:
-#         return redirect('/')
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_panel():
@@ -80,13 +70,10 @@ def admin_panel():
         current_admin = get_current_user()
         
         if request.method == 'POST':
-            # Handle form submissions for managing users, products, and orders
-            # Example: Delete a user
             if 'delete_user' in request.form:
-                user_id = request.form['user_id']
-                current_admin.delete_user(user_id)
-            
-            # Add more form handling for managing products and orders
+                email = request.form['email']
+                # user_email = request.form['user_email']
+                current_admin.delete_user(email)
         
         users = current_admin.get_all_users()
         products = current_admin.get_all_products()
@@ -95,6 +82,61 @@ def admin_panel():
         return render_template('admin_panel.html', users=users, products=products, orders=orders)
     else:
         return redirect('/')
+    
+
+@app.route('/modify_user', methods=['GET', 'POST'])
+def modify_user():
+    if get_current_user_role() == "admin":
+        if request.method == 'POST':
+            email = request.form.get('email')
+            user_data = {
+                "user_name": request.form.get('user_name'),
+                "first_name": request.form.get('first_name'),
+                "last_name": request.form.get('last_name'),
+                "user_role": request.form.get('user_role')
+            }
+            current_admin = get_current_user()
+            current_admin.modify_user(email, user_data)
+            return redirect(url_for('admin_panel'))
+        else:
+            email = request.args.get('email')
+            current_admin = get_current_user()
+            success, user_data = current_admin.get_user(email)
+            if success:
+                return render_template('modify_user.html', user_data=user_data)
+            else:
+                return redirect(url_for('admin_panel'))
+    else:
+        return redirect('/')
+
+# @app.route('/modify_user', methods=['GET', 'POST'])
+# def modify_user():
+#     if get_current_user_role() == "admin":
+#         if request.method == 'POST':
+#             user_id = request.form['user_id']
+#             user_data = {
+#                 "email": request.form['email'],
+#                 "user_name": request.form['user_name'],
+#                 "first_name": request.form['first_name'],
+#                 "last_name": request.form['last_name'],
+#                 "user_role": request.form['user_role']
+#             }
+#             current_admin = get_current_user()
+#             current_admin.modify_user(user_id, user_data)
+#             return redirect(url_for('admin_panel'))
+#         else:
+#             user_id = request.args.get('user_id')
+#             current_admin = get_current_user()
+#             # _, user_data = current_admin.get_user(user_id)
+#             # return render_template('modify_user.html', user_id=user_id, user_data=user_data)
+#             success, user_data = current_admin.get_user(user_id)
+#             if success:
+#                 return render_template('modify_user.html', user_id=user_id, user_data=user_data)
+#             else:
+#                 # Handle the case when user data retrieval fails
+#                 return redirect(url_for('admin_panel'))
+#     else:
+#         return redirect('/')
 
 @app.route('/buyer')
 def buyer_route():
