@@ -11,8 +11,16 @@ from backend.order import *
 from backend.product import * 
 
 
+
 admin_email = "admin@usc.edu"
 admin_password = "admin"
+signup_result = signup(admin_email, "Admin", "Admin", "", admin_password, "admin")
+print(signup_result)
+logout()
+
+
+admin_email = "admin1@usc.edu"
+admin_password = "admin1"
 signup_result = signup(admin_email, "Admin", "Admin", "", admin_password, "admin")
 print(signup_result)
 logout()

@@ -16,6 +16,15 @@ signup_result = signup(seller_email, "sellerUser", "Seller", "Example", seller_p
 print(signup_result)
 logout()
 
+
+
+seller_email = "sell1@example.com"
+seller_password = "password1234"
+signup_result = signup(seller_email, "sellerUser", "Seller", "Example", seller_password, "seller")
+print(signup_result)
+logout()
+
+
 signin(seller_email, seller_password)
 current_user = get_current_user()
 print("Signed in as " + current_user.email)
