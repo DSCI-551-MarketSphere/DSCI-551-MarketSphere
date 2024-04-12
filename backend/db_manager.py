@@ -99,3 +99,4 @@ class DBManager(DistributedDB):
 
     def get_all_orders(self):
         return self.get_all_records("orders")
+
