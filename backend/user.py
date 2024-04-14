@@ -59,10 +59,10 @@ class Buyer(User):
         
         successful, product = get_product(product_id)
         print(product)
-        if not product or product.inventory < 1:
+        if not product or int(product.inventory) < 1:
             return (False, "Product not found or out of stock")
         
-        product.inventory -= 1  # Decrement inventory
+        product.inventory = int(product.inventory)-1  # Decrement inventory
         db_manager.update_product_inventory(product_id, product.inventory) 
         
         # Generate a unique order ID
@@ -130,7 +130,6 @@ class Seller(User):
     def delete_product(self, product_id):
         db_manager = DBManager()
         db_manager.delete_product(product_id)
-        # Optionally, remove from seller's product listings if maintained
         if product_id in self.product_listings["product_listings"]:
             self.product_listings["product_listings"].remove(product_id)
             db_manager.patch(self.email, f"users/{self.email.replace('.', ',')}/product_listings", self.product_listings)
@@ -156,30 +155,76 @@ class Admin(User):
         self.db_manager.modify_user(email, user_data)
 
     def delete_user(self, email):
+        # also deletes products under the user if the user is a seller
+        duser = self.get_user(email)
+        if duser['user_role'] == 'seller':
+            duser_object = Seller(**duser)
+            for product_id in duser_object.product_listings["product_listings"]:
+                self.db_manager.delete_product(product_id)
         self.db_manager.delete_user(email)
 
     def get_user(self, email):
         return self.db_manager.get_user(email)
 
     def insert_product(self, product_data):
+        # seller's products add the new product
+        duser = self.get_user(product_data['seller_id'])
+        if duser:
+            duser_object = Seller(**duser)
+            duser_object.product_listings["product_listings"].append(product_data["item_id"])
+            self.db_manager.patch(duser_object.email, f"users/{duser_object.email.replace('.', ',')}/product_listings", duser_object.product_listings)
+            
         self.db_manager.insert_product(product_data)
 
     def modify_product(self, item_id, product_data):
         self.db_manager.modify_product(item_id, product_data)
 
     def delete_product(self, item_id):
-        self.db_manager.delete_product(item_id)
+        # seller's products delete the new product
+        success, product = get_product(item_id)
+        if success:
+            duser = self.get_user(product.seller_id)
+            if duser:
+                duser_object = Seller(**duser)
+                duser_object.product_listings["product_listings"].remove(item_id)
+                self.db_manager.patch(duser_object.email, f"users/{duser_object.email.replace('.', ',')}/product_listings", duser_object.product_listings)
+                
+            self.db_manager.delete_product(item_id)
 
     def get_product(self, item_id):
         return self.db_manager.get_product(item_id)
 
     def insert_order(self, order_data):
+        # buyer's and seller's order history add the new order
+        buyer_exists, buyer = get_user(order_data["buyer_id"])
+        seller_exists, seller = get_user(order_data["seller_id"])
+        if buyer_exists:
+            buyer.order_history["order_history"].append(order_data["order_id"])
+            self.db_manager.patch(buyer.email, f"users/{buyer.email.replace('.', ',')}/order_history", buyer.order_history)
+        
+        if seller_exists:
+            seller.order_history["order_history"].append(order_data["order_id"])
+            self.db_manager.patch(seller.email, f"users/{seller.email.replace('.', ',')}/order_history", seller.order_history)
+        
         self.db_manager.insert_order(order_data)
+
 
     def modify_order(self, order_id, order_data):
         self.db_manager.modify_order(order_id, order_data)
 
     def delete_order(self, order_id):
+        # buyer's and seller's order history delete the new order
+        order_data = self.get_order(order_id)
+        buyer_exists, buyer = get_user(order_data["buyer_id"])
+        seller_exists, seller = get_user(order_data["seller_id"])
+        if buyer_exists:
+            buyer.order_history["order_history"].remove(order_data["order_id"])
+            self.db_manager.patch(buyer.email, f"users/{buyer.email.replace('.', ',')}/order_history", buyer.order_history)
+        
+        if seller_exists:
+            seller.order_history["order_history"].remove(order_data["order_id"])
+            self.db_manager.patch(seller.email, f"users/{seller.email.replace('.', ',')}/order_history", seller.order_history)
+        
         self.db_manager.delete_order(order_id)
 
     def get_order(self, order_id):
