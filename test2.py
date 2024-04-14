@@ -37,12 +37,19 @@ print(current_user.product_listings)
 
 logout()
 
+
+# buyer examples:
+
 buyer_email = "buyer@example.com"
 buyer_password = "password456"
 signup(buyer_email, "buyerUser", "Buyer", "Example", buyer_password, "buyer")
 signin(buyer_email, buyer_password)
 current_user = get_current_user()
 print("Signed in as " + current_user.email)
+
+# buyer_email = "buyer11@example.com"
+# buyer_password = "password789"
+
 
 print("Search", search_products("Product"))
 print("Filter by Category", browse_products_by_category("Electronics"))
