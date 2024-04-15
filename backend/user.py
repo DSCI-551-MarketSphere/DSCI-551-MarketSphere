@@ -221,12 +221,14 @@ class Admin(User):
         buyer_exists, buyer = get_user(order_data["buyer_id"])
         seller_exists, seller = get_user(order_data["seller_id"])
         if buyer_exists:
-            buyer.order_history["order_history"].remove(order_data["order_id"])
-            self.db_manager.patch(buyer.email, f"users/{buyer.email.replace('.', ',')}/order_history", buyer.order_history)
+            if order_data["order_id"] in buyer.order_history["order_history"]:
+                buyer.order_history["order_history"].remove(order_data["order_id"])
+                self.db_manager.patch(buyer.email, f"users/{buyer.email.replace('.', ',')}/order_history", buyer.order_history)
         
         if seller_exists:
-            seller.order_history["order_history"].remove(order_data["order_id"])
-            self.db_manager.patch(seller.email, f"users/{seller.email.replace('.', ',')}/order_history", seller.order_history)
+            if order_data["order_id"] in seller.order_history["order_history"]:
+                seller.order_history["order_history"].remove(order_data["order_id"])
+                self.db_manager.patch(seller.email, f"users/{seller.email.replace('.', ',')}/order_history", seller.order_history)
         
         self.db_manager.delete_order(order_id)
 
