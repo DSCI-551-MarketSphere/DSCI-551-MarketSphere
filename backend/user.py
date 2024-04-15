@@ -120,7 +120,7 @@ class Seller(User):
         }
         
         db_manager = DBManager()
-        db_manager.insert_product(product_data)
+        db_manager.insert_product(product_data) # add product data into database
         
         self.product_listings["product_listings"].append(item_id)
 
@@ -135,6 +135,7 @@ class Seller(User):
             db_manager.patch(self.email, f"users/{self.email.replace('.', ',')}/product_listings", self.product_listings)
         return (True, "Product deleted successfully")
     
+    # add or decrease inventory
     def update_inventory(self, product_id, new_inventory):
         db_manager = DBManager()
         db_manager.update_product_inventory(product_id, new_inventory)
@@ -142,7 +143,8 @@ class Seller(User):
 
     def get_my_products(self):
         return (True, self.product_listings)
-    
+
+# CURD for users, orders, products
 class Admin(User):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -155,7 +157,8 @@ class Admin(User):
         self.db_manager.modify_user(email, user_data)
 
     def delete_user(self, email):
-        # also deletes products under the user if the user is a seller
+        # if the user is a seller, also deletes products under the user
+        # if the user is buyer, delete buyer and get_user(buyer_id) will be invalid
         duser = self.get_user(email)
         if duser['user_role'] == 'seller':
             duser_object = Seller(**duser)
