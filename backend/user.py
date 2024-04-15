@@ -24,8 +24,8 @@ class User:
         self.sha_hashed_password = sha_hashed_password
         self.user_role = user_role
         self.order_history = order_history
-        self.product_listings = product_listings
-        self.cart = cart
+        self.product_listings = product_listings #for seller, list of product ID
+        self.cart = cart #for buyer, list of product ID
 
     def my_orders(self):
         return (True, self.order_history)
