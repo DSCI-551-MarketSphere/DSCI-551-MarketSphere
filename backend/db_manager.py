@@ -14,7 +14,7 @@ class DBManager(DistributedDB):
 
     def get_user(self, email):
         return self.get(email, f"users/{email.replace('.', ',')}")
-
+    
     def insert_product(self, product_data):
         item_id = product_data.get('item_id')
         self.put(item_id, f"products/{item_id}", product_data)

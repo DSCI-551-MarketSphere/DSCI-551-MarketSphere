@@ -4,11 +4,7 @@
     <title>MarketSphere - Buyer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- <script>
-        $(document).ready(function() {
-            // JavaScript code for buyer functionality
-        });
-    </script> -->
+
 </head>
 <body class="bg-blue-900 dark:bg-zinc-800">
     <div class="container mx-auto px-4 py-8">
@@ -46,24 +42,32 @@
         
         <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8 mb-8">
             <h2 class="text-2xl font-bold mb-4">My Cart</h2>
+            <div id="cart"></div>
         </div>
         
         <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8">
             <h2 class="text-2xl font-bold mb-4">Order History</h2>
-            <table class="w-full" id="order-history">
+            <!-- <div id="order-history"></div> -->
+            <table class="w-full">
                 <thead>
                     <tr>
                         <th class="py-2 px-4 bg-blue-500 text-white">Order ID</th>
                         <th class="py-2 px-4 bg-blue-500 text-white">Product</th>
-                        <th class="py-2 px-4 bg-blue-500 text-white">Seller</th>
+                        <th class="py-2 px-4 bg-blue-500 text-white">Buyer</th>
                         <th class="py-2 px-4 bg-blue-500 text-white">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for order in buyer.order_history["order_history"] %}
+                    {% for order in order_history %}
                     <tr>
                         <td class="py-2 px-4 border-b">{{ order.order_id }}</td>
-                        <td class="py-2 px-4 border-b">{{ order.item_id }}</td>
+                        <td class="py-2 px-4 border-b">
+                            {% if order.item_id %}
+                                {{ order.item_id }}
+                            {% else %}
+                                Product not found
+                            {% endif %}
+                        </td>
                         <td class="py-2 px-4 border-b">{{ order.seller_id }}</td>
                         <td class="py-2 px-4 border-b">{{ order.status }}</td>
                     </tr>
@@ -89,7 +93,7 @@
                 });
             });
     
-            $('.remove-from-cart').click(function() {
+            $(document).on('click', '.remove-from-cart', function() {
                 var itemId = $(this).data('item-id');
                 $.post('/remove_from_cart', { item_id: itemId }, function(response) {
                     if (response.success) {
@@ -104,20 +108,22 @@
                 });
             });
 
-            $('#checkout-btn').click(function() {
+            $(document).on('click', '#checkout-btn', function() {
                 $.post('/checkout', function(response) {
                     if (response.success) {
                         alert(response.message);
-                        // Update the order history and clear the cart display
-                        $.get('/get_order_history', function(data) {
-                            $('#order-history').html(data);
-                        });
-                        $('#cart').empty();
+                        location.reload();
                     } else {
                         alert(response.message);
                     }
                 });
             });
+
+            // Load the cart items on page load
+            $.get('/get_cart', function(data) {
+                $('#cart').html(data);
+            });
+
         });
     </script>
         

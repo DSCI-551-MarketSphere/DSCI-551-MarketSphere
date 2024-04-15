@@ -157,6 +157,7 @@ def modify_product():
                 "price": request.form['price'],
                 "description": request.form['description'],
                 "category": request.form['category'],
+                "seller_id": request.form['seller_id'],
                 "inventory": request.form['inventory']
             }
             current_admin = get_current_user()
@@ -254,9 +255,17 @@ def buyer_route():
             success, products = browse_products_by_category("")  # Retrieve all products
         
         if success:
-            return render_template('buyer.html', buyer=buyer, products=products)
+            success, order_history = buyer.get_order_history()
+            if success:
+                return render_template('buyer.html', buyer=buyer, products=products, order_history=order_history)
+            else:
+                return render_template('buyer.html', buyer=buyer, products=products, order_history=[])
         else:
-            return render_template('buyer.html', buyer=buyer, products=[])
+            success, order_history = buyer.get_order_history()
+            if success:
+                return render_template('buyer.html', buyer=buyer, products=[], order_history=order_history)
+            else:
+                return render_template('buyer.html', buyer=buyer, products=[], order_history=[])
     else:
         return redirect('/')
     
@@ -280,13 +289,16 @@ def remove_from_cart():
     else:
         return redirect('/')
     
-@app.route('/make_order', methods=['POST'])
-def make_order():
+@app.route('/get_cart')
+def get_cart():
     if get_current_user_role() == "buyer":
         buyer = get_current_user()
-        item_id = request.form['item_id']
-        success, message = buyer.make_order(item_id)
-        return {"success": success, "message": message}
+        cart_items = []
+        for item_id in buyer.cart["cart"]:
+            if item_id != "dummy":
+                _, product = get_product(item_id)
+                cart_items.append(product)
+        return render_template('cart.html', cart_items=cart_items)
     else:
         return redirect('/')
 
@@ -299,17 +311,97 @@ def checkout():
     else:
         return redirect('/')
 
-
+@app.route('/get_order_history')
+def get_order_history():
+    if get_current_user_role() == "buyer":
+        buyer = get_current_user()
+        order_history = []
+        for order_id in buyer.order_history["order_history"]:
+            if order_id != "dummy":
+                _, order = get_order(order_id)
+                if order and order.item_id is not None:
+                    order_history.append(order)
+        return render_template('order_history.html', order_history=order_history)
+    else:
+        return redirect('/')
 
 # =================seller======================
 @app.route('/seller')
 def seller_route():
     if get_current_user_role() == "seller":
         seller = get_current_user()
-        products = seller.get_my_products()
-        return render_template('seller.html', seller=seller, products=products)
+        success, products = seller.get_my_products()
+        if success:
+            success, order_history = seller.get_order_history()
+            if success:
+                return render_template('seller.html', seller=seller, product_listings=products, order_history=order_history)
+            else:
+                return render_template('seller.html', seller=seller, product_listings=products, order_history=[])
+        else:
+            return render_template('seller.html', seller=seller, product_listings=[], order_history=[])
+        # success, order_history = seller.get_order_history()
+        # return render_template('seller.html', seller=seller, products=products, order_history=order_history)
     else:
         return redirect('/')
+    
+@app.route('/create_product', methods=['GET', 'POST'])
+def create_product():
+    if get_current_user_role() == "seller":
+        seller = get_current_user()
+        if request.method == 'POST':
+            item_name = request.form['item_name']
+            price = request.form['price']
+            description = request.form['description']
+            category = request.form['category']
+            pictures = request.form['pictures']
+            inventory = request.form['inventory']
+            success, message = seller.create_product_for_sell(item_name, price, description, category, pictures, inventory)
+            if success:
+                return redirect(url_for('seller_route'))
+            else:
+                return render_template('create_product.html', error=message)
+        else:
+            return render_template('create_product.html')
+    else:
+        return redirect('/')
+
+@app.route('/update_inventory', methods=['POST'])
+def update_inventory():
+    if get_current_user_role() == "seller":
+        seller = get_current_user()
+        item_id = request.form['item_id']
+        # new_inventory = request.form['new_inventory']
+        new_inventory = int(request.form['new_inventory'])  # Convert to integer
+        success, message = seller.update_inventory(item_id, new_inventory)
+        return {"success": success, "message": message}
+    else:
+        return redirect('/')
+
+
+@app.route('/get_product_listing')
+def get_product_listing():
+    if get_current_user_role() == "seller":
+        seller = get_current_user()
+        success, product_listing = seller.get_my_products()
+        if success:
+            return render_template('product_listing.html', product_listing=product_listing)
+        else:
+            return render_template('product_listing.html', product_listing=[])
+    else:
+        return redirect('/')
+    
+
+@app.route('/delete_product', methods=['POST'])
+def delete_product():
+    if get_current_user_role() == "seller":
+        seller = get_current_user()
+        item_id = request.form['item_id']
+        success, message = seller.delete_product(item_id)
+        return {"success": success, "message": message}
+    else:
+        return redirect('/')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -4,11 +4,6 @@
     <title>MarketSphere - Seller</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // JavaScript code for seller functionality
-        });
-    </script>
 </head>
 <body class="bg-blue-900 dark:bg-zinc-800">
     <div class="container mx-auto px-4 py-8">
@@ -32,34 +27,48 @@
                         <th class="py-2 px-4 bg-blue-500 text-white">Product ID</th>
                         <th class="py-2 px-4 bg-blue-500 text-white">Name</th>
                         <th class="py-2 px-4 bg-blue-500 text-white">Price</th>
+                        <th class="py-2 px-4 bg-blue-500 text-white">Category</th>
                         <th class="py-2 px-4 bg-blue-500 text-white">Inventory</th>
                         <th class="py-2 px-4 bg-blue-500 text-white">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for product in products %}
+                    {% for product in product_listings %}
                     <tr>
                         <td class="py-2 px-4 border-b">{{ product.item_id }}</td>
                         <td class="py-2 px-4 border-b">{{ product.item_name }}</td>
                         <td class="py-2 px-4 border-b">{{ product.price }}</td>
+                        <td class="py-2 px-4 border-b">{{ product.category }}</td>
                         <td class="py-2 px-4 border-b">{{ product.inventory }}</td>
                         <td class="py-2 px-4 border-b">
-                            <!-- Add forms for managing products -->
+                            <!-- <form method="POST" action="{{ url_for('delete_product') }}"> -->
+                            <form method="POST" onsubmit="return deleteProduct(this);">
+                                <input type="hidden" name="item_id" value="{{ product.item_id }}">
+                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                                    Delete
+                                </button>
+                            </form>
+                            <!-- <form method="POST" action="{{ url_for('update_inventory') }}"> -->
+                            <form method="POST" onsubmit="return updateInventory(this);">
+                                <input type="hidden" name="item_id" value="{{ product.item_id }}">
+                                <input type="number" name="new_inventory" min="0" value="{{ product.inventory }}" class="border rounded py-1 px-2 mr-2">
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                                    Update Inventory
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            
         </div>
         
         <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8 mb-8">
             <h2 class="text-2xl font-bold mb-4">Create New Product</h2>
-            <form method="POST" action="/create-product">
-                <!-- Add form fields for creating a new product -->
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Create Product
-                </button>
-            </form>
+            <a href="{{ url_for('create_product') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Product
+            </a>
         </div>
         
         <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8">
@@ -74,7 +83,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for order in orders %}
+                    {% for order in order_history %}
                     <tr>
                         <td class="py-2 px-4 border-b">{{ order.order_id }}</td>
                         <td class="py-2 px-4 border-b">{{ order.item_id }}</td>
@@ -86,5 +95,33 @@
             </table>
         </div>
     </div>
+    <script>
+       function deleteProduct(form) {
+            var itemId = form.elements['item_id'].value;
+            $.post('/delete_product', { item_id: itemId }, function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload(); // Reload the page after successful deletion
+                } else {
+                    alert('Failed to delete the product.');
+                }
+            });
+            return false; // Prevent form submission
+        }
+
+        function updateInventory(form) {
+            var itemId = form.elements['item_id'].value;
+            var newInventory = form.elements['new_inventory'].value;
+            $.post('/update_inventory', { item_id: itemId, new_inventory: newInventory }, function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload(); // Reload the page after successful update
+                } else {
+                    alert('Failed to update the inventory.');
+                }
+            });
+            return false; // Prevent form submission
+        }
+    </script>
 </body>
 </html>
