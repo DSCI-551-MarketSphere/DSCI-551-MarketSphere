@@ -76,12 +76,13 @@ class DBManager(DistributedDB):
                             results.append(product)
         return results
     
+    # return data (given path)from one databases
     def get_all_from_db(self, path, db_url):
         """fetch all records from one database."""
         url = f"{db_url}{path}.json"
         response = requests.get(url)
         return response.json() if response.status_code == 200 else {}
-
+    # return data (given path)from both databases
     def get_all_records(self, path):
         """Fetch all records from all databases for a given path."""
         all_records = {}
@@ -90,13 +91,16 @@ class DBManager(DistributedDB):
             if records:
                 all_records.update(records)
         return all_records
-
+   
+    #return all users for admin
     def get_all_users(self):
         return self.get_all_records("users")
-
+    
+    #return all products for admin
     def get_all_products(self):
         return self.get_all_records("products")
-
+    
+    #return all orders for admin
     def get_all_orders(self):
         return self.get_all_records("orders")
 
