@@ -159,11 +159,9 @@ class Seller(User):
         db_manager.update_product_inventory(item_id, new_inventory)
         return (True, "Inventory updated successfully")
 
-    # def get_my_products(self):
-    #     return (True, self.product_listings)
-
     def get_my_products(self):
-        db_manager = DBManager()
+        if self.product_listings is None:
+            self.product_listings = {'product_listings': []}
         item_ids = self.product_listings["product_listings"]
         products = []
         for item_id in item_ids:
