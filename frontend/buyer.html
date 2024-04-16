@@ -19,7 +19,7 @@
                 Logout
             </a>
         </div>
-        
+
         <div class="bg-white dark:bg-zinc-900 shadow-md rounded px-8 py-8 mb-8">
             <h2 class="text-2xl font-bold mb-4">Search for Desired Products</h2>
             <form method="GET" action="{{ url_for('buyer_route') }}" class="mb-4">
@@ -32,8 +32,16 @@
                     <h3 class="text-xl font-bold mb-2">{{ product.item_name }}</h3>
                     <p class="mb-2">{{ product.description }}</p>
                     <p class="mb-4">Price: ${{ product.price }}</p>
-                    <button class="add-to-cart bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" data-item-id="{{ product.item_id }}">
+                    <p class="mb-2">Inventory: {{ product.inventory }}</p>
+                    <!-- <button class="add-to-cart bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" data-item-id="{{ product.item_id }}">
                         Add to Cart
+                    </button> -->
+                    <button class="add-to-cart bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" data-item-id="{{ product.item_id }}" {% if product.inventory < 1 %}disabled{% endif %}>
+                        {% if product.inventory < 1 %}
+                            Out of Stock
+                        {% else %}
+                            Add to Cart
+                        {% endif %}
                     </button>
                 </div>
                 {% endfor %}
