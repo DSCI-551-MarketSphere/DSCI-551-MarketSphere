@@ -1,6 +1,9 @@
 # DSCI-551-Final-Project-MarketSphere
 MarketSphere is a distributed e-commerce platform that allows users to buy and sell products. It utilizes a distributed database system to ensure scalability and fault tolerance.
 
+Demo Video: https://youtu.be/W2vhFi16tzI
+
+
 ## Project Structure
 The project is structured into the following modules:
 
@@ -48,6 +51,3 @@ Install Streamlit: `pip install streamlit`
 
 Run the application: `streamlit run app.py`
 
-## Demo Video
-
-https://youtu.be/W2vhFi16tzI
