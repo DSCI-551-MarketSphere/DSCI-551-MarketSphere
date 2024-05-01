@@ -1,4 +1,4 @@
-# DSCI-551-MarketSphere
+# DSCI-551-Final-Project-MarketSphere
 MarketSphere is a distributed e-commerce platform that allows users to buy and sell products. It utilizes a distributed database system to ensure scalability and fault tolerance.
 
 ## Project Structure
