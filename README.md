@@ -51,3 +51,7 @@ Install Streamlit: `pip install streamlit`
 
 Run the application: `streamlit run app.py`
 
+Existing Accounts :
+- seller: seller_email = "sell@example.com"; seller_password = "password123"
+- buyer: buyer_email = "buyer@example.com"; buyer_password = "password456"
+- admin: admin_email = "admin1@usc.edu"; admin_password = "admin1"
