@@ -47,9 +47,9 @@ MarketSphere supports three user roles: Buyer, Seller, and Admin.
 
 ## Installation and Usage
 
-Install Streamlit: `pip install streamlit`
+Install Flask: `pip install Flask`
 
-Run the application: `streamlit run app.py`
+Run the application: `python app.py`
 
 Existing Accounts :
 - seller: seller_email = "sell@example.com"; seller_password = "password123"
