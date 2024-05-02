@@ -13,7 +13,7 @@ The project is structured into the following modules:
 - `user.py`: Defines the User class and its subclasses (Buyer, Seller, and Admin), and handles user-related operations like signup and signin.
 - `product.py`: Defines the Product class and provides functions for creating, retrieving, browsing, and searching products.
 - `order.py`: Defines the Order class and handles order creation and retrieval.
-- `admin_panel.py`: Streamlit application for the admin panel.
+- `admin_panel.py`: Flask application for the admin panel.
 
 ## Distributed Database System
 MarketSphere utilizes a distributed database system to handle user data, product listings, and order management. The system is designed to ensure scalability and fault tolerance by distributing data across multiple databases using a hash function.
